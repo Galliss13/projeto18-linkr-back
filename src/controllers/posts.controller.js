@@ -38,9 +38,9 @@ export async function createPostController(req, res, next) {
         usedAt,
       };
       await insertHashtagUse(hashtagObj);
-      return res.sendStatus(201);
     } catch (error) {
       return res.status(400).send(error);
     }
   }
+  return res.sendStatus(201);
 }
