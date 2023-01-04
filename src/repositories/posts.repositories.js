@@ -11,3 +11,20 @@ export function insertPostAndReturnId(post) {
     [post.userId, post.link, post.text, post.createdAt]
   );
 }
+
+export function getPostsList() {
+  return db.query(
+    `
+    SELECT 
+	    p."id", 
+	    p."link", 
+	    p."text", 
+	    p."createdAt", 
+	    u."name",
+	    u."imageUrl"
+    FROM posts AS p
+    JOIN users AS u ON p."userId" = u."id" 
+    ORDER BY p."createdAt" DESC
+    LIMIT 20;`
+  );
+}
