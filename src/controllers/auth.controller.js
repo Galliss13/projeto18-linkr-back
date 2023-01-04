@@ -5,14 +5,14 @@ import bcrypt from 'bcrypt';
 import { singUpSchema } from "../schemas/singUp.schema.js";
 
 
-export async function SingInRegister(req, res){ 
+export async function singInRegister(req, res){ 
 
     const body = req.body
 
     const validation = singInSchema.validate(body, {abortEarly:false})
 
     if(validation.error){
-        const errors = singInSchema.error.details.map(e => e.message)
+        const errors = validation.error.details.map(e => e.message)
         return res.status(400).send(errors)
     }
 
@@ -49,14 +49,16 @@ export async function SingInRegister(req, res){
 }
 
 
-export async function SingUpRegister(req, res){
+export async function singUpRegister(req, res){
 
     const body = req.body
 
     const validation = singUpSchema.validate(body, {abortEarly:false})
 
+    console.log(validation)
+
     if(validation.error){
-        const errors = singUpSchema.error.details.map(e => e.message)
+        const errors = validation.error.details.map(e => e.message)
         return res.status(400).send(errors)
     }
 
@@ -72,7 +74,7 @@ export async function SingUpRegister(req, res){
         await db.query(`INSERT INTO users(name, email, password) VALUES ($1,$2,$3)`, [body.name, body.email, passwordHash])
 
         res.sendStatus(200)
-        
+
     } catch (error) {
         console.log(error)
         res.sendStatus(500)
