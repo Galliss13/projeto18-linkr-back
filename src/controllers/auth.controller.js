@@ -2,6 +2,7 @@ import { db } from "../database/db.js";
 import { singInSchema } from "../schemas/singIn.schema.js";
 import {v4 as uuid} from 'uuid';
 import bcrypt from 'bcrypt';
+import { singUpSchema } from "../schemas/singUp.schema.js";
 
 
 export async function SingInRegister(req, res){ 
@@ -40,6 +41,37 @@ export async function SingInRegister(req, res){
     try {
         
         res.status(200).send({token: newToken, user: existUser.rows[0]})
+        
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
+    }
+}
+
+
+export async function SingUpRegister(req, res){
+
+    const body = req.body
+
+    const validation = singUpSchema.validate(body, {abortEarly:false})
+
+    if(validation.error){
+        const errors = singUpSchema.error.details.map(e => e.message)
+        return res.status(400).send(errors)
+    }
+
+    const existEmail = await db.query(`SELECT * FROM users WHERE email = $1`, [body.email])
+
+    if(existEmail.rows[0]){
+        return res.status(400).send('Email já cadastrado!')
+    }
+
+    const passwordHash = bcrypt.hashSync(body.password, 10)
+
+    try {
+        await db.query(`INSERT INTO users(name, email, password) VALUES ($1,$2,$3)`, [body.name, body.email, passwordHash])
+
+        res.sendStatus(200)
         
     } catch (error) {
         console.log(error)
