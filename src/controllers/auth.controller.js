@@ -1,30 +1,16 @@
-import { v4 as uuid } from 'uuid';
+
 import bcrypt from 'bcrypt';
 import { singUpSchema } from "../schemas/singUp.schema.js";
-import { getExistSession, getExistUser, insertNewUserInUsers, insertTokenInSession, updateTokenInSession } from "../repositories/auth.repositories.js";
+import {getExistUser, insertNewUserInUsers } from "../repositories/auth.repositories.js";
 
 
 export async function singInRegister(req, res) {
 
-    
-
-    const {user} = res.locals
-
-    // CREATE OR UPDATE A USER SESSION IN SESSIONS
-
-    const newToken = uuid()
-
-    const existSession = await getExistSession(user.id)    
-
-    if (existSession.rows[0]) {
-        await updateTokenInSession(newToken, user.id)
-    } else {
-        await insertTokenInSession(newToken,user.id)
-    }
+    const {user,token} = res.locals
 
     try {
 
-        res.status(200).send({ token: newToken, user: user })
+        res.status(200).send({ token, user })
 
     } catch (error) {
         console.log(error)
