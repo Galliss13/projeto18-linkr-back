@@ -24,7 +24,7 @@ export async function singUpRegister(req, res) {
 
         await insertNewUserInUsers(body, passwordHash)
 
-        res.sendStatus(200)
+        res.sendStatus(201)
 
     } catch (error) {
         console.log(error)
