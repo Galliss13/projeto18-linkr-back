@@ -4,7 +4,7 @@ import { createOrUpdateSessions, validateSingInMiddleware, validateSingUpMiddlew
 
 const router = Router()
 
-router.post('/', validateSingInMiddleware, createOrUpdateSessions, singInRegister)
-router.post('/sing-up', validateSingUpMiddleware, singUpRegister)
+router.post('/sign-in', validateSingInMiddleware, createOrUpdateSessions, singInRegister)
+router.post('/sign-up', validateSingUpMiddleware, singUpRegister)
 
 export default router
