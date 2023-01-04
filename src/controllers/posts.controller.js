@@ -7,7 +7,7 @@ import {
 import { getPostsList, insertPostAndReturnId } from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res, next) {
-  const userId = 1; //req.userId; // nao existe ainda, viria de um outro middleware de validacao do token que retorna o userId vinculado
+  const userId = res.locals.userId;
   const post = {
     link: req.validatedPost.link,
     text: req.validatedPost.text,
