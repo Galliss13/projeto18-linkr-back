@@ -4,6 +4,6 @@ import { singInRegister, singUpRegister } from "../controllers/auth.controller.j
 const router = Router()
 
 router.post('/', singInRegister)
-router.post('/sign-up', singUpRegister)
+router.post('/sing-up', singUpRegister)
 
 export default router
