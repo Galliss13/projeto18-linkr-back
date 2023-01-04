@@ -1,9 +1,10 @@
+import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 import { getExistSession, getExistUser, insertTokenInSession, updateTokenInSession } from "../repositories/auth.repositories.js"
 import { singInSchema } from "../schemas/singIn.schema.js"
-import { v4 as uuid } from 'uuid';
+import { singUpSchema } from '../schemas/singUp.schema.js';
 
-export async function validateSingInMiddleware(req, res, next){
+export async function validateSingInMiddleware(req, res, next) {
 
     const body = req.body
 
@@ -28,24 +29,22 @@ export async function validateSingInMiddleware(req, res, next){
 
     res.locals.user = existUser.rows[0]
 
-    console.log(res.locals)
-
     next()
 }
 
-export async function createOrUpdateSessions(req, res, next){
+export async function createOrUpdateSessions(req, res, next) {
 
     // CREATE OR UPDATE A USER SESSION IN SESSIONS
-    const {user} = res.locals
+    const { user } = res.locals
 
     const newToken = uuid()
 
-    const existSession = await getExistSession(user.id)    
+    const existSession = await getExistSession(user.id)
 
     if (existSession.rows[0]) {
         await updateTokenInSession(newToken, user.id)
     } else {
-        await insertTokenInSession(newToken,user.id)
+        await insertTokenInSession(newToken, user.id)
     }
 
     res.locals.token = newToken
@@ -53,7 +52,28 @@ export async function createOrUpdateSessions(req, res, next){
     next()
 }
 
-export async function validateSingUpMiddleware(req, res, next){
+export async function validateSingUpMiddleware(req, res, next) {
 
+    const body = req.body
+
+    const validationSchema = singUpSchema.validate(body, { abortEarly: false })
+
+    if (validationSchema.error) {
+        const errors = validationSchema.error.details.map(e => e.message)
+        return res.status(400).send(errors)
+    }
+
+    const existEmail = await getExistUser(body.email)
+
+    if (existEmail.rows[0]) {
+        return res.status(400).send('Email já cadastrado!')
+    }
+
+    const passwordHash = bcrypt.hashSync(body.password, 10)
+
+    res.locals.body = body
+    res.locals.passwordHash = passwordHash
+
+    next()
 
 }
