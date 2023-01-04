@@ -7,7 +7,7 @@ export async function singInRegister(req, res) {
 
     try {
 
-        res.status(200).send({ token, user })
+        res.status(200).send({ token, name: user.name, imageurl: user.imageUrl, userId: user.id })
 
     } catch (error) {
         console.log(error)
@@ -21,7 +21,7 @@ export async function singUpRegister(req, res) {
     const { body, passwordHash } = res.locals
 
     try {
-        
+
         await insertNewUserInUsers(body, passwordHash)
 
         res.sendStatus(200)
