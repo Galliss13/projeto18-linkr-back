@@ -1,4 +1,4 @@
-import { checkTokenReturnUser } from "../repositories/auth.repositories"
+import { checkTokenReturnUser } from "../repositories/auth.repositories.js"
 
 
 export async function validateToken(req, res, next){
