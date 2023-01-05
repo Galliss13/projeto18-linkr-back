@@ -2,9 +2,12 @@ import dayjs from "dayjs";
 import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
-  insertHashtagUse
+  insertHashtagUse,
 } from "../repositories/hashtag.repositories.js";
-import { getPostsList, insertPostAndReturnId } from "../repositories/posts.repositories.js";
+import {
+  getPostsList,
+  insertPostAndReturnId,
+} from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res, next) {
   const userId = res.locals.userId;
@@ -12,7 +15,7 @@ export async function createPostController(req, res, next) {
     link: req.validatedPost.link,
     text: req.validatedPost.text,
     createdAt: req.validatedPost.createdAt,
-    userId
+    userId,
   };
   const hashtags = req.hashtags;
   let postId;
@@ -23,21 +26,23 @@ export async function createPostController(req, res, next) {
     return res.status(400).send(error);
   }
   if (hashtags.length === 0) return res.sendStatus(201);
+  const insertedHashtags = [];
   for (const hashtag of hashtags) {
     try {
+      if (insertedHashtags.includes(hashtag)) continue;
       const hashtagExists = await checkIfHashtagExistsReturningId(hashtag);
       let hashtagId;
       const usedAt = dayjs().format("YYYY-MM-DD hh:mm:ss");
-      console.log(`${hashtag} ${usedAt}`);
       hashtagExists
         ? (hashtagId = hashtagExists)
         : (hashtagId = await insertHashtagReturningId(hashtag, usedAt));
       const hashtagObj = {
         hashtagId,
         postId,
-        usedAt
+        usedAt,
       };
       await insertHashtagUse(hashtagObj);
+      insertedHashtags.push(hashtag);
     } catch (error) {
       return res.status(400).send(error);
     }
