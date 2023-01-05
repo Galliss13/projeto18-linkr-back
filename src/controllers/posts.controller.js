@@ -56,10 +56,14 @@ export async function getPosts(req, res) {
 
     const posts = await Promise.all(
       postsInfo.map(async (post) => {
-        const { link } = post;
-        const metadata = await urlMetadata(link);
-        const { title, description, image } = metadata;
-        return { ...post, title, description, image };
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          const { title, description, image } = metadata;
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+        }
       })
     );
     res.send(posts);
