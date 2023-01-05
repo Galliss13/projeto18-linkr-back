@@ -5,6 +5,13 @@ export function getExistUser(email) {
   return existUser;
 }
 
+export function getExistUserById(userId){
+
+  const user = db.query(`SELECT * FROM users WHERE id = $1`, [userId])
+
+  return user
+}
+
 export function getExistSession(userId) {
   const existSession = db.query(`SELECT * FROM sessions WHERE "userId" = $1`, [
     userId,
