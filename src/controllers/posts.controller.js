@@ -11,11 +11,13 @@ import {
   deletePostById,
   updatePost,
   insertPostAndReturnId,
+  getPostsList,
 } from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res) {
   const {link, text, createdAt} = req.validatedPost
-  const userId = 1; //req.userId; // nao existe ainda, viria de um outro middleware de validacao do token que retorna o userId vinculado
+  const userId = 1; //req.us
+  erId; // nao existe ainda, viria de um outro middleware de validacao do token que retorna o userId vinculado
   const post = {
     link,
     text,
@@ -48,6 +50,8 @@ export async function deletePost (req, res) {
   }
 }
 
+/* --------------------------------------------------------- */
+
 export async function editPost (req, res) {
   const {link, text} = req.body
   const {postId} = req.params
@@ -68,6 +72,24 @@ export async function editPost (req, res) {
   }
   return res.sendStatus(201);
 }
+
+async function verifyHashtagExistenceAndAdd(hashtag, postId) {
+  const hashtagExists = await checkIfHashtagExistsReturningId(hashtag);
+  let hashtagId;
+  const usedAt = dayjs().format("YYYY-MM-DD hh:mm:ss");
+  console.log(`${hashtag} ${usedAt}`)
+  hashtagExists
+    ? (hashtagId = hashtagExists)
+    : (hashtagId = await insertHashtagReturningId(hashtag, usedAt));
+  const hashtagObj = {
+    hashtagId,
+    postId,
+    usedAt,
+  };
+  await insertHashtagUse(hashtagObj);
+}
+/* --------------------------------------------------------- */
+
 
 export async function getPosts(req, res) {
   try {
@@ -102,22 +124,6 @@ export async function getPosts(req, res) {
   }
 }
 
-
-async function verifyHashtagExistenceAndAdd(hashtag, postId) {
-  const hashtagExists = await checkIfHashtagExistsReturningId(hashtag);
-  let hashtagId;
-  const usedAt = dayjs().format("YYYY-MM-DD hh:mm:ss");
-  console.log(`${hashtag} ${usedAt}`)
-  hashtagExists
-    ? (hashtagId = hashtagExists)
-    : (hashtagId = await insertHashtagReturningId(hashtag, usedAt));
-  const hashtagObj = {
-    hashtagId,
-    postId,
-    usedAt,
-  };
-  await insertHashtagUse(hashtagObj);
-}
 
 export async function getPostsFromHashtag(req, res) {
   const hashtagName = req.params.hashtagName

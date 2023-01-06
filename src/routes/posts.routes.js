@@ -9,7 +9,7 @@ const router = Router();
 router.get("/timeline", getPosts);
 router.get("/posts/:hashtagName", getPostsFromHashtag);
 router.post("/post", validateToken, validateCreatePost, createPostController);
-router.delete("/post/:id", deleteHashtags, deletePost);
-router.put("/post/:id", editPost);
+router.delete("/post/:id",validateToken, deleteHashtags, deletePost);
+router.put("/post/:id",validateToken, editPost);
 
 export default router;
