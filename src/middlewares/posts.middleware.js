@@ -5,6 +5,7 @@ import { createPostSchema } from "../schemas/createPostSchema.js";
 import { 
   deleteHashtagUsesByPostId
 } from "../repositories/hashtag.repositories.js";
+import { editPostSchema } from "../schemas/editPostSchema.js";
 
 
 export async function validateCreatePost(req, res, next) {
@@ -21,6 +22,18 @@ export async function validateCreatePost(req, res, next) {
   hashtags ? (req.hashtags = hashtags) : (req.hashtags = []);
   req.validatedPost = { link: post.link, text: post.text, createdAt };
   next();
+}
+
+export async function validateEditPost(req, res, next) {
+  const editedPost = req.body;
+  const { error } = editPostSchema.validate(editedPost, {
+    abortEarly: false,
+  });
+  if (error) {
+    const errors = error.details.map((detail) => detail.message);
+    return res.status(422).send(errors);
+  }
+  next()
 }
 
 export async function validateToken(req, res, next) {
