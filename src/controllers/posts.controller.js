@@ -6,6 +6,7 @@ import {
   insertHashtagUse,
 } from "../repositories/hashtag.repositories.js";
 import {
+  getHashtagPosts,
   getPostsList,
   insertPostAndReturnId
 } from "../repositories/posts.repositories.js";
@@ -81,5 +82,16 @@ export async function getPosts(req, res) {
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
+  }
+}
+
+export async function getPostsFromHashtag(req, res) {
+  const hashtagName = req.params.hashtagName
+
+  try {
+    const hashtags = await getHashtagPosts(hashtagName);
+    res.send(hashtags.rows).status(200);
+  } catch (error) {
+    return res.status(400).send(error);
   }
 }
