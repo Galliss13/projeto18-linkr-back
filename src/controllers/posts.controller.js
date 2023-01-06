@@ -53,16 +53,25 @@ export async function getPosts(req, res) {
   try {
     const postsData = await getPostsList();
     const postsInfo = postsData.rows;
-
     const posts = await Promise.all(
       postsInfo.map(async (post) => {
         try {
           const { link } = post;
           const metadata = await urlMetadata(link);
-          const { title, description, image } = metadata;
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
           return { ...post, title, description, image };
         } catch (error) {
           console.log(error);
+          return { ...post, title: "", description: "", image: "" };
         }
       })
     );
