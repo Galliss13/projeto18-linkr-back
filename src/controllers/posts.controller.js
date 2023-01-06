@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import urlMetadata from "url-metadata";
 import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
@@ -7,7 +8,7 @@ import {
 import {
   getHashtagPosts,
   getPostsList,
-  insertPostAndReturnId,
+  insertPostAndReturnId
 } from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res, next) {
@@ -53,9 +54,31 @@ export async function createPostController(req, res, next) {
 
 export async function getPosts(req, res) {
   try {
-    const posts = await getPostsList();
-    console.log(posts);
-    res.send(posts.rows).status(200);
+    const postsData = await getPostsList();
+    const postsInfo = postsData.rows;
+    const posts = await Promise.all(
+      postsInfo.map(async (post) => {
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+          return { ...post, title: "", description: "", image: "" };
+        }
+      })
+    );
+    res.send(posts);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
