@@ -33,3 +33,16 @@ export function insertHashtagUse(hashtagObj) {
     [hashtagObj.hashtagId, hashtagObj.postId, hashtagObj.usedAt]
   );
 }
+
+export function getTrendingHashtags() {
+  return db.query(`
+    SELECT COUNT(u.id) as uses, h.hashtag
+    FROM hashtags h 
+    JOIN "hashtagUse" u ON h.id = u."hashtagId" 
+    JOIN posts p ON u."postId"=p.id
+    WHERE u."usedAt" > now() - interval '1 week'
+    GROUP BY h.id
+    ORDER BY uses DESC
+    LIMIT 10;
+  `)
+}
