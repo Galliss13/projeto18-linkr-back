@@ -19,10 +19,10 @@ export async function likesMiddleware(req, res, next) {
   }
   const createdAt = dayjs().format("YYYY-MM-DD hh:mm:ss");
 
-  const postExists = getPostById(postId);
+  const postExists = await getPostById(postId);
   if (!postExists) return res.status(404).send("invalid post id");
 
-  const userExists = getExistUserById(userId);
+  const userExists = await getExistUserById(userId);
   if (!userExists) return res.status(404).send("invalid user id");
 
   req.likeObject = {
