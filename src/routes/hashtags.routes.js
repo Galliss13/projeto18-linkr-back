@@ -5,7 +5,7 @@ import { validateToken } from "../middlewares/validateToken.middleware.js";
 const router = Router();
 
 router.get("/hashtags");
-router.get("/trending", validateToken, trendingHashtagsController);
+router.get("/trending", trendingHashtagsController);
 router.post("/hashtag");
 router.post("/hashtagUse/:hashtagId/:postId");
 router.delete("/hashtag/:hashtagId");
