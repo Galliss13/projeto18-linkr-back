@@ -14,12 +14,15 @@ export async function checkIfHashtagExistsReturningId(hashtag) {
 }
 
 export async function insertHashtagReturningId(hashtag, createdAt) {
-  const insertHashtag = await db.query(`
+  const insertHashtag = await db.query(
+    `
    INSERT INTO hashtags
    (hashtag, "createdAt")
    VALUES ($1, $2)
    RETURNING id
-   `, [hashtag, createdAt]);
+   `,
+    [hashtag, createdAt]
+  );
   return insertHashtag.rows[0].id;
 }
 
@@ -31,6 +34,17 @@ export function insertHashtagUse(hashtagObj) {
     VALUES ($1, $2, $3)
     `,
     [hashtagObj.hashtagId, hashtagObj.postId, hashtagObj.usedAt]
+  );
+}
+
+
+export function deleteHashtagUsesByPostId(postId) {
+  return db.query(
+    `
+    DELETE FROM "hashtagUse" 
+    WHERE "postId"=$1 
+    `,
+    [postId]
   );
 }
 
