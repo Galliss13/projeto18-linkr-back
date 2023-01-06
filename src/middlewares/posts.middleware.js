@@ -1,3 +1,4 @@
+import { db } from "../database/db.js";
 import dayjs from "dayjs";
 
 import { createPostSchema } from "../schemas/createPostSchema.js";
@@ -19,6 +20,20 @@ export async function validateCreatePost(req, res, next) {
   const createdAt = dayjs().format("YYYY-MM-DD hh:mm:ss");
   hashtags ? (req.hashtags = hashtags) : (req.hashtags = []);
   req.validatedPost = { link: post.link, text: post.text, createdAt };
+  next();
+}
+
+export async function validateToken(req, res, next) {
+  const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer ", "");
+  const tokenExists = await db.query("SELECT * FROM sessions WHERE token=$1;", [
+    token,
+  ]);
+  if (!tokenExists.rows[0]) {
+    return res.sendStatus(401);
+  }
+  res.locals.auth = token;
+  res.locals.userId = tokenExists.rows[0].userId;
   next();
 }
 

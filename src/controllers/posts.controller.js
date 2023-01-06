@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-
+import urlMetadata from "url-metadata";
 import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
@@ -26,7 +26,7 @@ export async function createPostController(req, res) {
   let postId;
   try {
     const insertPost = await insertPostAndReturnId(post);
-    postId = insertPost.rows[0].id
+    postId = insertPost.rows[0].id;
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -66,6 +66,40 @@ export async function editPost (req, res) {
     console.log(error);
     return res.sendStatus(500)
   }
+  return res.sendStatus(201);
+}
+
+export async function getPosts(req, res) {
+  try {
+    const postsData = await getPostsList();
+    const postsInfo = postsData.rows;
+    const posts = await Promise.all(
+      postsInfo.map(async (post) => {
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+          return { ...post, title: "", description: "", image: "" };
+        }
+      })
+    );
+    res.send(posts);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 }
 
 
@@ -85,3 +119,13 @@ async function verifyHashtagExistenceAndAdd(hashtag, postId) {
   await insertHashtagUse(hashtagObj);
 }
 
+export async function getPostsFromHashtag(req, res) {
+  const hashtagName = req.params.hashtagName
+
+  try {
+    const hashtags = await getHashtagPosts(hashtagName);
+    res.send(hashtags.rows).status(200);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+}

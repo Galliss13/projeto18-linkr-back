@@ -1,6 +1,6 @@
-import joi from 'joi';
+import joi from "joi";
 
 export const createPostSchema = joi.object({
-    link: joi.string().uri().required(),
-    text: joi.string().required()
-})
+  link: joi.string().uri().required(),
+  text: joi.string().required().allow(""),
+});
