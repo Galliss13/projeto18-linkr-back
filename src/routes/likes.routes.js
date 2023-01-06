@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { postLikeController } from "../controllers/likes.controller.js";
+import {
+  deleteLikeController,
+  postLikeController,
+} from "../controllers/likes.controller.js";
 import { likesMiddleware } from "../middlewares/likes.middleware.js";
 import { validateToken } from "../middlewares/validateToken.middleware.js";
 
@@ -12,6 +15,11 @@ router.post(
   likesMiddleware,
   postLikeController
 );
-router.delete("/like/:postId");
+router.delete(
+  "/like/:postId",
+  validateToken,
+  likesMiddleware,
+  deleteLikeController
+);
 
 export default router;
