@@ -42,6 +42,7 @@ export function getTrendingHashtags() {
     JOIN posts p ON u."postId"=p.id
     WHERE u."usedAt" > now() - interval '1 week'
     GROUP BY h.id
-    ORDER BY uses DESC;
+    ORDER BY uses DESC
+    LIMIT 10;
   `)
 }
