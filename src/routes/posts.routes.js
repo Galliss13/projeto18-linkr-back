@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { createPostController } from "../controllers/posts.controller.js";
-import { validateCreatePost } from "../middlewares/validateCreatePost.js";
+import { createPostController, deletePost, editPost } from "../controllers/posts.controller.js";
+import { deleteHashtags, validateCreatePost } from "../middlewares/posts.middleware.js";
 
 const router = Router()
 
 router.get('/timeline')
 router.post('/post', validateCreatePost, createPostController)
-router.delete('/post/:id')
-router.put('/post/:id')
+router.delete('/post/:postId', deleteHashtags, deletePost)
+router.put('/post/:postId', editPost)
 
 export default router
