@@ -1,7 +1,6 @@
 import { db } from "../database/db.js";
 
 export async function getPostById(id) {
-  console.log(id);
   const post = await db.query(
     `
     SELECT * FROM posts 
@@ -9,7 +8,7 @@ export async function getPostById(id) {
     `,
     [id]
   )
-  return post.rows[0]
+  return (post.rows[0] ? post.rows[0] : undefined)
 }
 
 
