@@ -12,6 +12,7 @@ import {
   updatePost,
   insertPostAndReturnId,
   getPostsList,
+  getHashtagPosts,
 } from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res) {
