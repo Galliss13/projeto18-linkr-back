@@ -3,7 +3,7 @@ import urlMetadata from "url-metadata";
 import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
-  insertHashtagUse,
+  insertHashtagUse
 } from "../repositories/hashtag.repositories.js";
 import {
   getPostsList,
@@ -16,7 +16,7 @@ export async function createPostController(req, res, next) {
     link: req.validatedPost.link,
     text: req.validatedPost.text,
     createdAt: req.validatedPost.createdAt,
-    userId,
+    userId
   };
   const hashtags = req.hashtags;
   let postId;
@@ -40,7 +40,7 @@ export async function createPostController(req, res, next) {
       const hashtagObj = {
         hashtagId,
         postId,
-        usedAt,
+        usedAt
       };
       await insertHashtagUse(hashtagObj);
       insertedHashtags.push(hashtag);
@@ -55,6 +55,9 @@ export async function getPosts(req, res) {
   try {
     const postsData = await getPostsList();
     const postsInfo = postsData.rows;
+    if (!postsData.rows[0]) {
+      return res.send("There are no posts yet").status(204);
+    }
     const posts = await Promise.all(
       postsInfo.map(async (post) => {
         try {
@@ -80,6 +83,10 @@ export async function getPosts(req, res) {
     res.send(posts);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    res
+      .send(
+        "An error ocurred while trying to fetch the posts, please refresh the page"
+      )
+      .status(500);
   }
 }
