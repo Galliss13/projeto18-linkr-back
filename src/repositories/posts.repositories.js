@@ -24,7 +24,7 @@ export function insertPostAndReturnId(post) {
   );
 }
 
-export function deletePostById(id) {
+export function  deletePostById(id) {
   return db.query(
     `
     DELETE FROM posts 
