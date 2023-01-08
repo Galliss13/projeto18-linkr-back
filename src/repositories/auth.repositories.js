@@ -36,7 +36,7 @@ export function insertTokenInSession(newToken, userId) {
 export function insertNewUserInUsers(body, passwordHash) {
   return db.query(
     `INSERT INTO users(name, email, password, "imageUrl") VALUES ($1,$2,$3,$4)`,
-    [body.name, body.email, passwordHash, body.imageUrl]
+    [body.name.toLowerCase(), body.email, passwordHash, body.imageUrl]
   );
 }
 
