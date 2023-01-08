@@ -4,7 +4,7 @@ import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
   insertHashtagUse,
-  deleteHashtagUsesByPostId,
+  deleteHashtagUsesByPostId
 } from "../repositories/hashtag.repositories.js";
 
 import {
@@ -13,6 +13,7 @@ import {
   insertPostAndReturnId,
   getPostsList,
   getHashtagPosts,
+  getUserPostsList
 } from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res) {
@@ -22,7 +23,7 @@ export async function createPostController(req, res) {
     link,
     text,
     createdAt,
-    userId,
+    userId
   };
   const hashtags = req.hashtags;
   let postId;
@@ -84,7 +85,7 @@ async function verifyHashtagExistenceAndAdd(hashtag, postId) {
   const hashtagObj = {
     hashtagId,
     postId,
-    usedAt,
+    usedAt
   };
   await insertHashtagUse(hashtagObj);
 }
@@ -94,6 +95,9 @@ export async function getPosts(req, res) {
   try {
     const postsData = await getPostsList();
     const postsInfo = postsData.rows;
+    if (!postsData.rows[0]) {
+      return res.send("There are no posts yet").status(204);
+    }
     const posts = await Promise.all(
       postsInfo.map(async (post) => {
         try {
@@ -119,7 +123,52 @@ export async function getPosts(req, res) {
     res.send(posts);
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    res
+      .send(
+        "An error ocurred while trying to fetch the posts, please refresh the page"
+      )
+      .status(500);
+  }
+}
+
+export async function getUserPosts(req, res) {
+  const { id } = req.params;
+  try {
+    const postsData = await getUserPostsList(id);
+    const postsInfo = postsData.rows;
+    if (!postsData.rows[0]) {
+      return res.send("There are no posts yet").status(204);
+    }
+    const posts = await Promise.all(
+      postsInfo.map(async (post) => {
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+          return { ...post, title: "", description: "", image: "" };
+        }
+      })
+    );
+    res.send(posts);
+  } catch (error) {
+    console.log(error);
+    res
+      .send(
+        "An error ocurred while trying to fetch the posts, please refresh the page"
+      )
+      .status(500);
   }
 }
 
