@@ -40,9 +40,9 @@ export async function createPostController(req, res) {
 }
 
 export async function deletePost(req, res) {
-  const { postId } = req.params;
+  const { id } = req.params;
   try {
-    await deletePostById(postId);
+    await deletePostById(id);
     return res.sendStatus(204);
   } catch (error) {
     console.log(error);
