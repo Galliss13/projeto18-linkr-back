@@ -61,6 +61,7 @@ export function getPostsList() {
 	    p."link", 
 	    p."text", 
 	    p."createdAt", 
+      p."userId",
 	    u."name",
 	    u."imageUrl"
     FROM posts AS p
