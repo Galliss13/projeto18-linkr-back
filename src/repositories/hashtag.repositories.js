@@ -19,9 +19,11 @@ export async function insertHashtagReturningId(hashtag, createdAt) {
    INSERT INTO hashtags
    (hashtag, "createdAt")
    VALUES ($1, $2)
+   RETURNING id
    `,
     [hashtag, createdAt]
   );
+
   return insertHashtag.rows[0].id;
 }
 

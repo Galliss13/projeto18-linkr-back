@@ -66,7 +66,7 @@ export async function editPost(req, res) {
     hashtags.forEach(async (hashtag) => {
       await verifyHashtagExistenceAndAdd(hashtag, postId);
     });
-    return res.sendStatus(201);
+    return res.sendStatus(200);
   } catch (error) {
     console.log(error)
     return res.sendStatus(500);
