@@ -23,6 +23,7 @@ export async function insertHashtagReturningId(hashtag, createdAt) {
    `,
     [hashtag, createdAt]
   );
+
   return insertHashtag.rows[0].id;
 }
 
