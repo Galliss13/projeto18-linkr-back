@@ -3,6 +3,7 @@ import {
   getLikesFromPost,
   likeExists,
   postLike,
+  userLikesPost,
 } from "../repositories/likes.repositories.js";
 import { getPostById } from "../repositories/posts.repositories.js";
 
@@ -39,6 +40,17 @@ export async function getLikesFromPostController(req, res) {
     if (!postExists) return res.status(404).send("invalid post id");
     const likesFromPost = await getLikesFromPost(postId);
     res.send(likesFromPost).status(200);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+}
+
+export async function userLikesPostController(req, res) {
+  const postId = req.params.postId;
+  const { userId } = res.locals;
+  try {
+    const likes = await userLikesPost(userId, postId);
+    res.send(likes).status(200)
   } catch (error) {
     return res.status(400).send(error);
   }

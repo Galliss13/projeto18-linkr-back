@@ -41,3 +41,12 @@ export async function getLikesFromPost(postId) {
   if (likes.rows.length === 0) return 0;
   return likes.rows[0].count;
 }
+
+export async function userLikesPost(userId, postId) {
+  const likeExists = await db.query(
+    `SELECT * FROM likes WHERE "userId"=$1 AND "postId"=$2`,
+    [userId, postId]
+  );
+  if (likeExists.rows.length === 0) return false;
+  return true;
+}
