@@ -58,7 +58,7 @@ export async function editPost(req, res) {
   const { postId } = req.params;
   try {
     await deleteHashtagUsesByPostId(postId);
-    await updatePost(link, text, postId);
+    await updatePost(text, postId);
 
     let hashtags = text.match(/#[A-Za-zà-úÀ-Ú0-9_]+/g);
     if (!hashtags) hashtags = [];
@@ -66,11 +66,11 @@ export async function editPost(req, res) {
     hashtags.forEach(async (hashtag) => {
       await verifyHashtagExistenceAndAdd(hashtag, postId);
     });
-    res.sendStatus(200);
+    return res.sendStatus(201);
   } catch (error) {
-    return res.status(500).send(error);
+    console.log(error)
+    return res.sendStatus(500);
   }
-  return res.sendStatus(201);
 }
 
 async function verifyHashtagExistenceAndAdd(hashtag, postId) {

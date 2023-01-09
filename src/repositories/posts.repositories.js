@@ -33,16 +33,8 @@ export function  deletePostById(id) {
   );
 }
 
-export async function updatePost(link, text, id) {
-  await db.query(
-    `
-    UPDATE posts 
-    SET link = $1
-    WHERE id = $2
-    `,
-    [link, id]
-  );
-  await db.query(
+export async function updatePost(text, id) {
+  return db.query(
     `
     UPDATE posts 
     SET text = $1
@@ -50,7 +42,6 @@ export async function updatePost(link, text, id) {
     `,
     [text, id]
   );
-  return;
 }
 export function getPostsList() {
   return db.query(
