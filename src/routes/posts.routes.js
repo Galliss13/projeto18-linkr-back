@@ -12,14 +12,15 @@ import {
 import {
   deleteHashtags,
   validateCreatePost,
-  validateEditPost
+  validateEditPost,
+  userExists
 } from "../middlewares/posts.middleware.js";
 import { validateToken } from "../middlewares/validateToken.middleware.js";
 
 const router = Router();
 
 router.get("/timeline", validateToken, getPosts);
-router.get("/user/:id", validateToken, getUserPosts);
+router.get("/user/:id", userExists, validateToken, getUserPosts);
 router.get("/posts/:hashtagName", validateToken, getPostsFromHashtag);
 router.post("/post", validateToken, validateCreatePost, createPostController);
 router.delete("/post/:id",validateToken, deleteHashtags, deletePost);
