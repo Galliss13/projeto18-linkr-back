@@ -53,7 +53,7 @@ export async function deletePost(req, res) {
 /* --------------------------------------------------------- */
 
 export async function editPost(req, res) {
-  const { link, text } = req.body;
+  const { text } = req.body;
   const { postId } = req.params;
   try {
     await deleteHashtagUsesByPostId(postId);
