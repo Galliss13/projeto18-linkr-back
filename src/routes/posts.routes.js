@@ -22,7 +22,7 @@ router.get("/timeline", validateToken, getPosts);
 router.get("/user/:id", validateToken, getUserPosts);
 router.get("/posts/:hashtagName", validateToken, getPostsFromHashtag);
 router.post("/post", validateToken, validateCreatePost, createPostController);
-router.delete("/post/:id", validateToken, deleteHashtags, deletePost);
-router.put("/post/:id", validateToken, validateEditPost, editPost);
+router.delete("/post/:id",validateToken, deleteHashtags, deletePost);
+router.put("/post/:postId",validateToken, validateEditPost, editPost);
 
 export default router;
