@@ -41,3 +41,21 @@ export async function getLikesFromPost(postId) {
   if (likes.rows.length === 0) return 0;
   return likes.rows[0].count;
 }
+
+export async function userLikesPost(userId, postId) {
+  const likeExists = await db.query(
+    `SELECT * FROM likes WHERE "userId"=$1 AND "postId"=$2`,
+    [userId, postId]
+  );
+  if (likeExists.rows.length === 0) return false;
+  return true;
+}
+
+export async function usersLikesFromPost(postId) {
+  const users = await db.query(`
+  SELECT u.name FROM users u 
+  JOIN likes l ON u.id = l."userId" 
+  WHERE l."postId"=$1`, [postId]);
+  if (users.rows.length === 0) return [];
+  return users.rows;
+}
