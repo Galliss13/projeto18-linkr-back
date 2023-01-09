@@ -60,3 +60,17 @@ export async function deleteHashtags(req, res, next) {
     res.sendStatus(500)
   }
 }
+
+export async function userExists(req, res, next){
+  const { id } = req.params
+  try {
+    const userExists = await db.query("SELECT * FROM users WHERE id=$1;", [id]);
+    if (!userExists.rows[0]) {
+      return res.sendStatus(404);
+    }
+    next()
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
