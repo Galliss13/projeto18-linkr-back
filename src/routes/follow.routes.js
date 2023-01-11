@@ -5,7 +5,7 @@ import { validateToken } from "../middlewares/validateToken.middleware.js";
 
 const router = Router()
 
-router.get('/follow/:followerId/:followedId', checkExistUsers, checkFollow )
+router.get('/follow/:followerId/:followedId',validateToken, checkExistUsers, checkFollow )
 router.post('/follow-user', validateToken, checkExistUsers,  followOrUnfollow)
 
 export default router
