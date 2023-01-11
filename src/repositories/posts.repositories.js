@@ -47,19 +47,36 @@ export function getPostsList() {
   return db.query(
     `
     SELECT 
-	    p."id", 
-	    p."link", 
-	    p."text", 
-	    p."createdAt", 
-      p."userId",
-	    u."name",
-	    u."imageUrl",
-      COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = p."id"), 0) as likes
-    FROM posts AS p
-    JOIN users AS u ON u."id" =  p."userId"
-    GROUP BY p."id", u.name, u."imageUrl"
-    ORDER BY p."createdAt" DESC
-    LIMIT 20;`
+      x.*, 
+      u.name, 
+      u."imageUrl", 
+      COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes
+    FROM 
+    (SELECT p1.id,
+        p1."userId",
+        p1.link,
+        p1.text,
+        p1."createdAt",
+        false AS "isRepost",
+        0 AS "originalPostId",
+        0 AS "originalUserId"
+        FROM posts p1
+      UNION ALL
+      SELECT r1.id,
+             r1."userId",
+             p2.link,
+             p2.text,
+             r1."repostedAt" as "createdAt",
+             true AS "isRepost",
+             p2.id AS "originalPostId",
+             p2."userId" AS "originalUserId"
+             FROM reposts r1
+                  INNER JOIN posts p2
+                             ON p2.id = r1."postId"
+             ) x JOIN users u ON x."userId" = u.id
+      ORDER BY x."createdAt" DESC
+      LIMIT 20;
+    `
   );
 }
 
@@ -67,16 +84,35 @@ export function getUserPostsList(id) {
   return db.query(
     `
     SELECT 
-	    p."id", 
-	    p."link", 
-	    p."text", 
-	    p."createdAt", 
-      p."userId",
-	    u."name",
-	    u."imageUrl"
-    FROM posts AS p
-    JOIN users AS u ON p."userId" = u."id" WHERE p."userId" = $1
-    ORDER BY p."createdAt" DESC;`,
+      x.*, 
+      u.name, 
+      u."imageUrl", 
+      COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes
+    FROM 
+    (SELECT p1.id,
+        p1."userId",
+        p1.link,
+        p1.text,
+        p1."createdAt",
+        false AS "isRepost",
+        0 AS "originalPostId",
+        0 AS "originalUserId"
+        FROM posts p1
+      UNION ALL
+      SELECT r1.id,
+             r1."userId",
+             p2.link,
+             p2.text,
+             r1."repostedAt" as "createdAt",
+             true AS "isRepost",
+             p2.id AS "originalPostId",
+             p2."userId" AS "originalUserId"
+             FROM reposts r1
+                  INNER JOIN posts p2
+                             ON p2.id = r1."postId"
+             ) x JOIN users u ON x."userId" = u.id
+      WHERE x."userId" = $1
+      ORDER BY x."createdAt" DESC;`,
     [id]
   );
 }
