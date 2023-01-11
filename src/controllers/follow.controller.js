@@ -26,3 +26,19 @@ export async function followOrUnfollow(req, res){
     }
 
 }
+
+export async function checkFollow(req, res){
+
+    const {followedId, followerId} = req.params
+
+    try {
+        
+        const isFollowing = await getFollowingUser(followerId, followedId)
+
+        res.status(200).send(isFollowing.rows)
+
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
+    }
+}

@@ -5,6 +5,10 @@ export async function checkExistUsers(req, res, next){
 
     const {followedId, followerId} = req.body
 
+    if(!followedId && !followerId){
+        const {followedId, followerId} = req.params
+    }
+
     if(followedId === followerId){
         return res.sendStatus(409)
     }
