@@ -9,6 +9,7 @@ export async function followOrUnfollow(req, res){
 
     try {
 
+        /* In case exist in follows table it will delete otherwise it will create the follow */
         if(isFollowing.rows[0]){
 
             await deleteFollow(followerId, followedId)
