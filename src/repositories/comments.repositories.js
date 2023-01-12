@@ -13,7 +13,8 @@ export async function getPostComments(postId) {
         p.id, 
         p."userId", 
         u.id, 
-        u.name 
+        u.name,
+        u."imageUrl" 
         FROM comments c 
         JOIN posts p 
         ON c."postId" = p.id 

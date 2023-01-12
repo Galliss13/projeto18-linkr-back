@@ -54,6 +54,7 @@ export function getPostsList() {
       p."userId",
 	    u."name",
 	    u."imageUrl",
+	  COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = p."id"), 0) as comments,
       COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = p."id"), 0) as likes
     FROM posts AS p
     JOIN users AS u ON u."id" =  p."userId"
