@@ -219,6 +219,7 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 CREATE TABLE public.reposts (
     id integer NOT NULL,
+    "userId" integer NOT NULL,
     "postId" integer NOT NULL,
     "repostedAt" timestamp without time zone DEFAULT now()
 );
@@ -416,6 +417,10 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.comments VALUES (1, 10, 22, '{"text":"Esse é o primeiro comentário"}', '2023-01-10 19:46:14.293786');
+INSERT INTO public.comments VALUES (2, 10, 22, '{"text":"Esse é o primeiro comentário"}', '2023-01-10 19:46:43.679512');
+INSERT INTO public.comments VALUES (3, 10, 22, 'Esse é o terceiro comentário', '2023-01-10 20:25:48.753754');
+INSERT INTO public.comments VALUES (4, 10, 22, 'Esse é o quarto comentário', '2023-01-10 20:25:53.13776');
 
 
 --
@@ -549,7 +554,7 @@ INSERT INTO public.users VALUES (10, 'oba', 'oba@gmail.com', '$2b$10$JR029GGuXJe
 -- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.comments_id_seq', 1, false);
+SELECT pg_catalog.setval('public.comments_id_seq', 4, true);
 
 
 --
@@ -805,6 +810,14 @@ ALTER TABLE ONLY public.posts
 
 ALTER TABLE ONLY public.reposts
     ADD CONSTRAINT "reposts_postId_fkey" FOREIGN KEY ("postId") REFERENCES public.posts(id);
+
+
+--
+-- Name: reposts reposts_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reposts
+    ADD CONSTRAINT "reposts_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
 
 
 --
