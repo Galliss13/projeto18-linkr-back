@@ -3,11 +3,13 @@ import { getUserByBody } from "../repositories/follow.repositories.js"
 
 export async function checkExistUsers(req, res, next){
 
-    const {followedId, followerId} = req.body
-
+    let followedId = req.body.followedId 
+    let followerId = req.body.followerId
+    
     /* If it wasn't pass by body try to get by params  */
     if(!followedId && !followerId){
-        const {followedId, followerId} = req.params
+        followedId = req.params.followedId
+        followerId = req.params.followerId
     }
 
     if(followedId === followerId){
