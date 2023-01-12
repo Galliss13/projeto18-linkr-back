@@ -50,6 +50,7 @@ export function getPostsList() {
       x.*, 
       u.name, 
       u."imageUrl", 
+	  COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
       COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes
     FROM 
     (SELECT p1.id,
@@ -87,6 +88,7 @@ export function getUserPostsList(id) {
       x.*, 
       u.name, 
       u."imageUrl", 
+      COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
       COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes
     FROM 
     (SELECT p1.id,
@@ -128,6 +130,7 @@ export function getHashtagPosts(hashtagName) {
 	  p."createdAt", 
 	  users."name",
 	  users."imageUrl",
+    COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
     COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = p."id"), 0) as likes
   FROM hashtags h 
   JOIN "hashtagUse" u ON h.id = u."hashtagId"
