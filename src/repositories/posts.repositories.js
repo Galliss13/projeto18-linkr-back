@@ -34,6 +34,7 @@ export function  deletePostById(id) {
 }
 
 export async function updatePost(text, id) {
+  
   return db.query(
     `
     UPDATE posts 
@@ -51,7 +52,8 @@ export function getPostsList() {
       u.name, 
       u."imageUrl", 
 	  COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
-      COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes
+    COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes,
+    COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = x."id"), 0) as reposts
     FROM 
     (SELECT p1.id,
         p1."userId",
@@ -89,7 +91,8 @@ export function getUserPostsList(id) {
       u.name, 
       u."imageUrl", 
       COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
-      COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes
+      COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes,
+      COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = x."id"), 0) as reposts
     FROM 
     (SELECT p1.id,
         p1."userId",
@@ -131,7 +134,8 @@ export function getHashtagPosts(hashtagName) {
 	  users."name",
 	  users."imageUrl",
     COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
-    COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = p."id"), 0) as likes
+    COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = p."id"), 0) as likes,
+    COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = x."id"), 0) as reposts
   FROM hashtags h 
   JOIN "hashtagUse" u ON h.id = u."hashtagId"
   JOIN posts p ON u."postId" = p.id
