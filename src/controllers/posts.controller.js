@@ -4,7 +4,7 @@ import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
   insertHashtagUse,
-  deleteHashtagUsesByPostId
+  deleteHashtagUsesByPostId,
 } from "../repositories/hashtag.repositories.js";
 import { deleteLikesByPostId } from "../repositories/likes.repositories.js";
 
@@ -15,7 +15,8 @@ import {
   getPostsList,
   getHashtagPosts,
   getUserPostsList,
-  getNewPostsList
+  getNewPostsList,
+  getOlderPostsList,
 } from "../repositories/posts.repositories.js";
 import { deleteRepostByPostId } from "../repositories/reposts.repositories.js";
 
@@ -26,7 +27,7 @@ export async function createPostController(req, res) {
     link,
     text,
     createdAt,
-    userId
+    userId,
   };
   const hashtags = req.hashtags;
   let postId;
@@ -89,7 +90,7 @@ async function verifyHashtagExistenceAndAdd(hashtag, postId) {
   const hashtagObj = {
     hashtagId,
     postId,
-    usedAt
+    usedAt,
   };
   await insertHashtagUse(hashtagObj);
 }
@@ -188,12 +189,49 @@ export async function getPostsFromHashtag(req, res) {
 }
 
 export async function getNewPosts(req, res) {
-  const { lastPostDate } = req.body;
+  const { lastPostDate } = req.query;
+  console.log(lastPostDate);
   try {
     const postsData = await getNewPostsList(lastPostDate);
     const postsInfo = postsData.rows;
     if (!postsData.rows[0]) {
       return res.send("No new posts").status(204);
+    }
+    const posts = await Promise.all(
+      postsInfo.map(async (post) => {
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    );
+    res.send(posts);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getOlderPosts(req, res) {
+  const { lastPostDate } = req.query;
+  console.log(lastPostDate);
+  try {
+    const postsData = await getOlderPostsList(lastPostDate);
+    const postsInfo = postsData.rows;
+    if (!postsData.rows[0]) {
+      return res.send("No older posts").status(204);
     }
     const posts = await Promise.all(
       postsInfo.map(async (post) => {
