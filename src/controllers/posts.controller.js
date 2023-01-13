@@ -6,6 +6,7 @@ import {
   insertHashtagUse,
   deleteHashtagUsesByPostId,
 } from "../repositories/hashtag.repositories.js";
+import { deleteLikesByPostId } from "../repositories/likes.repositories.js";
 
 import {
   deletePostById,
@@ -14,8 +15,8 @@ import {
   getPostsList,
   getHashtagPosts,
   getUserPostsList,
-  getNewPostsList,
 } from "../repositories/posts.repositories.js";
+import { deleteRepostByPostId } from "../repositories/reposts.repositories.js";
 
 export async function createPostController(req, res) {
   const { link, text, createdAt } = req.validatedPost;
@@ -44,6 +45,8 @@ export async function createPostController(req, res) {
 export async function deletePost(req, res) {
   const { id } = req.params;
   try {
+    await deleteRepostByPostId(id);
+    await deleteLikesByPostId(id);
     await deletePostById(id);
     return res.sendStatus(204);
   } catch (error) {
