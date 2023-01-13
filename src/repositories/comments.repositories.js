@@ -21,7 +21,7 @@ export async function getPostComments(postId) {
         JOIN users u
         ON u.id = p."userId"
         WHERE p.id = $1
-        ORDER BY c."createdAt" DESC
+        ORDER BY c."createdAt" ASC
         `,
         [postId]
     )
