@@ -59,3 +59,13 @@ export async function usersLikesFromPost(postId) {
   if (users.rows.length === 0) return [];
   return users.rows;
 }
+
+
+export async function deleteLikesByPostId(postId) {
+  const result = await db.query(
+    `DELETE FROM likes WHERE "postId" = $1 RETURNING id`,
+    [postId]
+  );
+  if (result.rows.length === 0) return false;
+  return true;
+}

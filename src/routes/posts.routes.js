@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  getNewPosts,
   getPosts,
   getPostsFromHashtag,
   getUserPosts
@@ -20,7 +21,8 @@ import { validateToken } from "../middlewares/validateToken.middleware.js";
 const router = Router();
 
 router.get("/timeline", validateToken, getPosts);
-router.get("/user/:id", userExists, validateToken, getUserPosts);
+router.get("/timeline/newPosts", validateToken, getNewPosts)
+router.get("/userpost/:id", userExists, validateToken, getUserPosts);
 router.get("/posts/:hashtagName", validateToken, getPostsFromHashtag);
 router.post("/post", validateToken, validateCreatePost, createPostController);
 router.delete("/post/:id",validateToken, deleteHashtags, deletePost);

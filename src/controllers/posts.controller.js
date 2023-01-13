@@ -6,6 +6,7 @@ import {
   insertHashtagUse,
   deleteHashtagUsesByPostId
 } from "../repositories/hashtag.repositories.js";
+import { deleteLikesByPostId } from "../repositories/likes.repositories.js";
 
 import {
   deletePostById,
@@ -13,8 +14,10 @@ import {
   insertPostAndReturnId,
   getPostsList,
   getHashtagPosts,
-  getUserPostsList
+  getUserPostsList,
+  getNewPostsList
 } from "../repositories/posts.repositories.js";
+import { deleteRepostByPostId } from "../repositories/reposts.repositories.js";
 
 export async function createPostController(req, res) {
   const { link, text, createdAt } = req.validatedPost;
@@ -43,6 +46,8 @@ export async function createPostController(req, res) {
 export async function deletePost(req, res) {
   const { id } = req.params;
   try {
+    await deleteRepostByPostId(id);
+    await deleteLikesByPostId(id);
     await deletePostById(id);
     return res.sendStatus(204);
   } catch (error) {
@@ -68,7 +73,7 @@ export async function editPost(req, res) {
     });
     return res.sendStatus(200);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.sendStatus(500);
   }
 }
@@ -179,5 +184,40 @@ export async function getPostsFromHashtag(req, res) {
     res.send(hashtags.rows).status(200);
   } catch (error) {
     return res.status(400).send(error);
+  }
+}
+
+export async function getNewPosts(req, res) {
+  const { lastPostDate } = req.body;
+  try {
+    const postsData = await getNewPostsList(lastPostDate);
+    const postsInfo = postsData.rows;
+    if (!postsData.rows[0]) {
+      return res.send("No new posts").status(204);
+    }
+    const posts = await Promise.all(
+      postsInfo.map(async (post) => {
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    );
+    res.send(posts);
+  } catch (error) {
+    console.log(error);
   }
 }
