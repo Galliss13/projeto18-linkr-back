@@ -44,19 +44,21 @@ export async function updatePost(text, id) {
   );
 }
 export function getPostsList() {
+  
   return db.query(
     `
-    SELECT 
+      SELECT 
       x.*, 
       u.name, 
-      u."imageUrl", 
-	  COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
+      u."imageUrl",
+      f."followerId",
+    COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
     COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes,
     COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE 
         (reposts."postId" = x."id") AND ("isRepost" = false)
-         OR 
+        OR 
         (reposts."postId" = x."originalPostId") AND ("isRepost" = true)), 0)
-         as reposts
+        as reposts
     FROM 
     (SELECT p1.id,
         p1."userId",
@@ -69,20 +71,21 @@ export function getPostsList() {
         FROM posts p1
       UNION ALL
       SELECT r1.id,
-             r1."userId",
-             p2.link,
-             p2.text,
-             r1."repostedAt" as "createdAt",
-             true AS "isRepost",
-             p2.id AS "originalPostId",
-             p2."userId" AS "originalUserId"
-             FROM reposts r1
+            r1."userId",
+            p2.link,
+            p2.text,
+            r1."repostedAt" as "createdAt",
+            true AS "isRepost",
+            p2.id AS "originalPostId",
+            p2."userId" AS "originalUserId"
+            FROM reposts r1
                   INNER JOIN posts p2
-                             ON p2.id = r1."postId"
-             ) x JOIN users u ON x."userId" = u.id
+                            ON p2.id = r1."postId"
+            ) x JOIN users u ON x."userId" = u.id
+      LEFT JOIN follows f ON x."userId" = f."followedId"
+      
       ORDER BY x."createdAt" DESC
-      LIMIT 20;
-    `
+    `,
   );
 }
 
