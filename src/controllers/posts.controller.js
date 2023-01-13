@@ -184,9 +184,9 @@ export async function getPostsFromHashtag(req, res) {
 }
 
 export async function getNewPosts(req, res) {
-  const { id, lastPostDate } = req.params;
+  const { lastPostDate } = req.body;
   try {
-    const postsData = await getNewPostsList(id, lastPostDate);
+    const postsData = await getNewPostsList(lastPostDate);
     const postsInfo = postsData.rows;
     if (!postsData.rows[0]) {
       return res.send("No new posts").status(204);

@@ -156,7 +156,7 @@ export function getHashtagPosts(hashtagName) {
   );
 }
 
-export function getNewPostsList(id, lastPostDate) {
+export function getNewPostsList(lastPostDate) {
   return db.query(
     `
     SELECT 
@@ -188,7 +188,7 @@ export function getNewPostsList(id, lastPostDate) {
                   INNER JOIN posts p2
                              ON p2.id = r1."postId"
 ) x JOIN users u ON x."userId" = u.id
-WHERE x."createdAt" > TIMESTAMP $1
+WHERE x."createdAt" > $1
       ORDER BY x."createdAt" DESC;
     `,
     [lastPostDate]
