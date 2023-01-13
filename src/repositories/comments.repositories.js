@@ -14,14 +14,14 @@ export async function getPostComments(postId) {
         p."userId", 
         u.id, 
         u.name,
-        u."imageUrl" 
+        u."imageUrl" AS "commentImageUrl" 
         FROM comments c 
         JOIN posts p 
         ON c."postId" = p.id 
         JOIN users u
         ON u.id = p."userId"
         WHERE p.id = $1
-        ORDER BY c."createdAt" DESC
+        ORDER BY c."createdAt" ASC
         `,
         [postId]
     )

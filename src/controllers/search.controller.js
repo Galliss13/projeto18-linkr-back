@@ -2,10 +2,10 @@ import { getUsersSearch } from "../repositories/searchUsers.repositorie.js"
 
 
 export async function getUserBySearch(req, res) {
-    const { search } = req.params
+    const { search, followerId } = req.params
     try {
 
-        const userSearch = await getUsersSearch(search)
+        const userSearch = await getUsersSearch(search, followerId)
 
         res.status(200).send(userSearch.rows)
 
