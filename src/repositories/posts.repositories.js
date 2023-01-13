@@ -53,7 +53,11 @@ export function getPostsList() {
       u."imageUrl", 
 	  COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
     COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes,
-    COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = x."id"), 0) as reposts
+    COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE 
+        (reposts."postId" = x."id") AND ("isRepost" = false)
+         OR 
+        (reposts."postId" = x."originalPostId") AND ("isRepost" = true)), 0)
+         as reposts
     FROM 
     (SELECT p1.id,
         p1."userId",
@@ -92,7 +96,11 @@ export function getUserPostsList(id) {
       u."imageUrl", 
       COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
       COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = x."id"), 0) as likes,
-      COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = x."id"), 0) as reposts
+      COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE 
+        (reposts."postId" = x."id") AND ("isRepost" = false)
+         OR 
+        (reposts."postId" = x."originalPostId") AND ("isRepost" = true)), 0)
+         as reposts
     FROM 
     (SELECT p1.id,
         p1."userId",
