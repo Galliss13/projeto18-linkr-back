@@ -96,6 +96,7 @@ async function verifyHashtagExistenceAndAdd(hashtag, postId) {
 /* --------------------------------------------------------- */
 
 export async function getPosts(req, res) {
+
   try {
     const postsData = await getPostsList();
     const postsInfo = postsData.rows;
