@@ -141,9 +141,9 @@ export function getHashtagPosts(hashtagName) {
 	  p."createdAt", 
 	  users."name",
 	  users."imageUrl",
-    COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = x."id"), 0) as comments,
+    COALESCE ( (SELECT COUNT(comments.id) FROM comments WHERE comments."postId" = p."id"), 0) as comments,
     COALESCE( (SELECT COUNT(likes.id) FROM likes WHERE likes."postId" = p."id"), 0) as likes,
-    COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = x."id"), 0) as reposts
+    COALESCE( (SELECT COUNT(reposts.id) FROM reposts WHERE reposts."postId" = p."id"), 0) as reposts
   FROM hashtags h 
   JOIN "hashtagUse" u ON h.id = u."hashtagId"
   JOIN posts p ON u."postId" = p.id
