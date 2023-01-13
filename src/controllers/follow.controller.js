@@ -1,4 +1,4 @@
-import { createFollow, deleteFollow, getFollowingUser } from "../repositories/follow.repositories.js"
+import { createFollow, deleteFollow, getFollowingUser, getUserFollows } from "../repositories/follow.repositories.js"
 
 
 export async function followOrUnfollow(req, res){
@@ -40,6 +40,22 @@ export async function checkFollow(req, res){
 
     } catch (error) {
         console.log(error)
+        res.sendStatus(500)
+    }
+}
+
+export async function getAllUserFollows(req, res){
+
+    const {userId} = req.params
+
+    try {
+
+        const follows = await getUserFollows(userId)
+
+        res.send(200).SEND(follows.rows)
+    
+    } catch (error) {
+        console.log(error);
         res.sendStatus(500)
     }
 }

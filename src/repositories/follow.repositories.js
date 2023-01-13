@@ -13,6 +13,11 @@ export function getFollowingUser(followerId, followedId){
     return promise
 }
 
+export function getUserFollows(userId) {
+    const promise = db.query(`SELECT * FROM follows WHERE followerId" = $1`, [userId])
+    return promise
+}
+
 export function deleteFollow(followerId, followedId){
 
     const promise = db.query(`DELETE FROM follows WHERE "followerId" = $1 AND "followedId" = $2;`, [followerId, followedId])
