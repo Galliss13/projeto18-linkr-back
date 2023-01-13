@@ -4,8 +4,9 @@ import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
   insertHashtagUse,
-  deleteHashtagUsesByPostId
+  deleteHashtagUsesByPostId,
 } from "../repositories/hashtag.repositories.js";
+import { deleteLikesByPostId } from "../repositories/likes.repositories.js";
 
 import {
   deletePostById,
@@ -13,8 +14,9 @@ import {
   insertPostAndReturnId,
   getPostsList,
   getHashtagPosts,
-  getUserPostsList
+  getUserPostsList,
 } from "../repositories/posts.repositories.js";
+import { deleteRepostByPostId } from "../repositories/reposts.repositories.js";
 
 export async function createPostController(req, res) {
   const { link, text, createdAt } = req.validatedPost;
@@ -23,7 +25,7 @@ export async function createPostController(req, res) {
     link,
     text,
     createdAt,
-    userId
+    userId,
   };
   const hashtags = req.hashtags;
   let postId;
@@ -43,6 +45,8 @@ export async function createPostController(req, res) {
 export async function deletePost(req, res) {
   const { id } = req.params;
   try {
+    await deleteRepostByPostId(id);
+    await deleteLikesByPostId(id);
     await deletePostById(id);
     return res.sendStatus(204);
   } catch (error) {
@@ -68,7 +72,7 @@ export async function editPost(req, res) {
     });
     return res.sendStatus(200);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.sendStatus(500);
   }
 }
@@ -84,7 +88,7 @@ async function verifyHashtagExistenceAndAdd(hashtag, postId) {
   const hashtagObj = {
     hashtagId,
     postId,
-    usedAt
+    usedAt,
   };
   await insertHashtagUse(hashtagObj);
 }

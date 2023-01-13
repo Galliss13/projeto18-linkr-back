@@ -29,3 +29,14 @@ export async function deleteRepostById(repostId, userId) {
   if (result.rows.length === 0) return false;
   return true;
 }
+
+export async function deleteRepostByPostId(postId) {
+  const result = await db.query(
+    `DELETE FROM reposts WHERE "postId" = $1 RETURNING id`,
+    [postId]
+  );
+  if (result.rows.length === 0) return false;
+  return true;
+}
+
+
