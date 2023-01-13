@@ -4,7 +4,7 @@ import {
   checkIfHashtagExistsReturningId,
   insertHashtagReturningId,
   insertHashtagUse,
-  deleteHashtagUsesByPostId
+  deleteHashtagUsesByPostId,
 } from "../repositories/hashtag.repositories.js";
 
 import {
@@ -13,7 +13,8 @@ import {
   insertPostAndReturnId,
   getPostsList,
   getHashtagPosts,
-  getUserPostsList
+  getUserPostsList,
+  getNewPostsList,
 } from "../repositories/posts.repositories.js";
 
 export async function createPostController(req, res) {
@@ -23,7 +24,7 @@ export async function createPostController(req, res) {
     link,
     text,
     createdAt,
-    userId
+    userId,
   };
   const hashtags = req.hashtags;
   let postId;
@@ -68,7 +69,7 @@ export async function editPost(req, res) {
     });
     return res.sendStatus(200);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.sendStatus(500);
   }
 }
@@ -84,7 +85,7 @@ async function verifyHashtagExistenceAndAdd(hashtag, postId) {
   const hashtagObj = {
     hashtagId,
     postId,
-    usedAt
+    usedAt,
   };
   await insertHashtagUse(hashtagObj);
 }
@@ -179,5 +180,40 @@ export async function getPostsFromHashtag(req, res) {
     res.send(hashtags.rows).status(200);
   } catch (error) {
     return res.status(400).send(error);
+  }
+}
+
+export async function getNewPosts(req, res) {
+  const { id, lastPostDate } = req.params;
+  try {
+    const postsData = await getNewPostsList(id, lastPostDate);
+    const postsInfo = postsData.rows;
+    if (!postsData.rows[0]) {
+      return res.send("No new posts").status(204);
+    }
+    const posts = await Promise.all(
+      postsInfo.map(async (post) => {
+        try {
+          const { link } = post;
+          const metadata = await urlMetadata(link);
+          let { title, description, image } = metadata;
+          if (!title) {
+            title = "";
+          }
+          if (!description) {
+            description = "";
+          }
+          if (!image) {
+            image = "";
+          }
+          return { ...post, title, description, image };
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    );
+    res.send(posts);
+  } catch (error) {
+    console.log(error);
   }
 }
